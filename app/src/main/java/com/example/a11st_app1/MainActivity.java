@@ -1,12 +1,16 @@
 package com.example.a11st_app1;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -26,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     static RequestQueue requestQueue;
 
+    RecyclerView recyclerView;
+    MoiveAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         requestText = findViewById(R.id.edit_text);
-        responseText = findViewById(R.id.response_text);
+
 
         Button requestBtn = findViewById(R.id.request_btn);
         requestBtn.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
+
+        recyclerView = findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager((layoutManager));
+
+        adapter = new MoiveAdapter();
+        recyclerView.setAdapter(adapter);
+
+
+
 }
 
         public void makeRequest() {
@@ -91,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
             public void println(String data){
-               responseText.append(data + "\n");
+               Log.d("MainActivity", data);
 
 
 
@@ -102,6 +118,18 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         MovieList movieList = gson.fromJson(response, MovieList.class);
         println("영화 정보의 수 : " + movieList.boxOfficeResult.dailyBoxOfficeList.size());
+
+
+        for(int i=0; i<movieList.boxOfficeResult.dailyBoxOfficeList.size(); i++){
+            Movie movie = movieList.boxOfficeResult.dailyBoxOfficeList.get(i);
+            adapter.addItem(movie);
+
+        }
+        adapter.notifyDataSetChanged();
+
+
+
+
 
     }
     
